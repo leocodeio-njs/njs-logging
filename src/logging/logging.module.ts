@@ -1,10 +1,13 @@
-import { Module } from '@nestjs/common';
+// utils/logging/logging.module.ts
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { LoggerService } from './logger.service';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
 import { ConfigModule } from '@nestjs/config';
 import { DebugUtil } from './debug.util';
+import { CorrelationService } from './correlation.service';
+import { CorrelationMiddleware } from './correlation.middleware';
 
 @Module({
   imports: [
@@ -15,11 +18,13 @@ import { DebugUtil } from './debug.util';
           format: winston.format.combine(
             winston.format.timestamp(),
             winston.format.colorize(),
-            winston.format.printf(({ timestamp, level, message, ...meta }) => {
-              return `[${timestamp}] ${level}: ${message} ${
-                Object.keys(meta).length ? JSON.stringify(meta) : ''
-              }`;
-            }),
+            winston.format.printf(
+              ({ timestamp, level, message, correlationId, ...meta }) => {
+                return `[${timestamp}] ${level}: [${correlationId}] ${message} ${
+                  Object.keys(meta).length ? JSON.stringify(meta) : ''
+                }`;
+              },
+            ),
           ),
         }),
         // File transport for errors
@@ -51,7 +56,11 @@ import { DebugUtil } from './debug.util';
     }),
     ConfigModule.forRoot(),
   ],
-  providers: [LoggerService, DebugUtil],
-  exports: [LoggerService, DebugUtil],
+  providers: [LoggerService, DebugUtil, CorrelationService],
+  exports: [LoggerService, DebugUtil, CorrelationService],
 })
-export class LoggingModule {}
+export class LoggingModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CorrelationMiddleware).forRoutes('*');
+  }
+}
