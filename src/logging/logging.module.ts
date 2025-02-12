@@ -1,5 +1,6 @@
 // utils/logging/logging.module.ts
-import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { DynamicModule, Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerService } from './logger.service';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
@@ -8,12 +9,22 @@ import { ConfigModule } from '@nestjs/config';
 import { DebugUtil } from './debug.util';
 import { CorrelationService } from './correlation.service';
 import { CorrelationMiddleware } from './correlation.middleware';
+import { DatabaseLoggerService } from './database-logger.service';
+import { LogEntry } from './entities/log-entry.entity';
+import { LoggingModuleOptions } from './interfaces/logging-options.interface';
 
 @Module({
-  imports: [
-    WinstonModule.forRoot({
-      transports: [
-        // Console transport for development
+  imports: [ConfigModule],
+  providers: [CorrelationService],
+  exports: [CorrelationService]
+})
+export class LoggingModule implements NestModule {
+  static forRoot(options: LoggingModuleOptions): DynamicModule {
+    const winstonTransports = [];
+
+    // Configure Winston transports based on options
+    if (options.winston?.console !== false) {
+      winstonTransports.push(
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp(),
@@ -27,39 +38,69 @@ import { CorrelationMiddleware } from './correlation.middleware';
             ),
           ),
         }),
-        // File transport for errors
+      );
+    }
+
+    if (options.winston?.file?.enabled) {
+      // Error logs
+      winstonTransports.push(
         new winston.transports.DailyRotateFile({
-          filename: 'logs/error-%DATE%.log',
+          filename: options.winston.file.errorPath || 'logs/error-%DATE%.log',
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
-          maxSize: '20m',
-          maxFiles: '14d',
+          maxSize: options.winston.file.maxSize || '20m',
+          maxFiles: options.winston.file.maxFiles || '14d',
           level: 'error',
           format: winston.format.combine(
             winston.format.timestamp(),
             winston.format.json(),
           ),
-        }),
-        // File transport for all logs
+        })
+      );
+
+      // Combined logs
+      winstonTransports.push(
         new winston.transports.DailyRotateFile({
-          filename: 'logs/combined-%DATE%.log',
+          filename: options.winston.file.combinedPath || 'logs/combined-%DATE%.log',
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
-          maxSize: '20m',
-          maxFiles: '14d',
+          maxSize: options.winston.file.maxSize || '20m',
+          maxFiles: options.winston.file.maxFiles || '14d',
           format: winston.format.combine(
             winston.format.timestamp(),
             winston.format.json(),
           ),
+        })
+      );
+    }
+
+    return {
+      global: true,
+      module: LoggingModule,
+      imports: [
+        TypeOrmModule.forFeature([LogEntry, ...(options.entities || [])]),
+        WinstonModule.forRoot({
+          transports: winstonTransports,
         }),
+        ConfigModule,
       ],
-    }),
-    ConfigModule.forRoot(),
-  ],
-  providers: [LoggerService, DebugUtil, CorrelationService],
-  exports: [LoggerService, DebugUtil, CorrelationService],
-})
-export class LoggingModule implements NestModule {
+      providers: [
+        LoggerService,
+        DebugUtil,
+        DatabaseLoggerService,
+        CorrelationMiddleware,
+        CorrelationService,
+      ],
+      exports: [
+        LoggerService,
+        DebugUtil,
+        DatabaseLoggerService,
+        CorrelationMiddleware,
+        CorrelationService,
+      ],
+    };
+  }
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(CorrelationMiddleware).forRoutes('*');
   }

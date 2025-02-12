@@ -5,15 +5,22 @@ import { Inject } from '@nestjs/common';
 import { Logger } from 'winston';
 import { Request } from 'express';
 import { CorrelationService } from './correlation.service';
+import { DatabaseLoggerService } from './database-logger.service';
+import { ILogEntry } from './interfaces/log-entry.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService extends WinstonLogger {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) logger: Logger,
     private readonly correlationService: CorrelationService,
+    private readonly databaseLogger: DatabaseLoggerService,
   ) {
     super(logger);
     this.setContext('Application');
+  }
+
+  private async logToDatabase(logEntry: ILogEntry) {
+    await this.databaseLogger.saveLog(logEntry);
   }
 
   private addMetadata(metadata: any = {}) {
@@ -24,12 +31,16 @@ export class LoggerService extends WinstonLogger {
     };
   }
 
-  log(message: any, context?: any) {
-    super.log(message, this.addMetadata({ context }));
+  async log(message: any, context?: any) {
+    const metadata = this.addMetadata({ context });
+    super.log(message, metadata);
+    await this.logToDatabase({ level: 'info', message, ...metadata });
   }
 
-  error(message: any, trace?: any, context?: any) {
-    super.error(message, trace, this.addMetadata({ context }));
+  async error(message: any, trace?: any, context?: any) {
+    const metadata = this.addMetadata({ context, trace });
+    super.error(message, trace, metadata);
+    await this.logToDatabase({ level: 'error', message, error: trace, ...metadata });
   }
 
   warn(message: any, context?: any) {

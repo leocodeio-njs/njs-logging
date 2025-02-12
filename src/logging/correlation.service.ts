@@ -18,7 +18,7 @@ export class CorrelationService {
     return this.asyncLocalStorage.run(correlationId, callback);
   }
 
-  generateCorrelationId(): string {
-    return `${Date.now()}-${uuidv4()}`;
+  generateCorrelationId(correlationId?: string): string {
+    return correlationId ? `${correlationId}-${Date.now()}-${uuidv4()}` : `${Date.now()}-${uuidv4()}`;
   }
 }

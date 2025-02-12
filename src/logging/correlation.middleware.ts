@@ -9,7 +9,7 @@ export class CorrelationMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const correlationId =
       (req.headers['x-correlation-id'] as string) ||
-      this.correlationService.generateCorrelationId();
+      this.correlationService.generateCorrelationId(req.headers['x-correlation-id'] as string);
 
     // Add correlation ID to response headers
     res.setHeader('x-correlation-id', correlationId);
