@@ -5,3 +5,8 @@
 ```bash
 npm install @leocodeio-njs/njs-logging
 ```
+
+## License
+
+MIT
+
