@@ -22,7 +22,8 @@ jobs:
           scope: '@leocodeio-njs'
             
       - name: Configure npm to use the authentication token
-        run: echo "@leocodeio-njs:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}"
+        run: echo "@leocodeio-njs:registry=https://npm.pkg.github.com
+        //npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}"
     
       - name: Configure npm to use the authentication token
         run: echo "@leocodeio-njs:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
