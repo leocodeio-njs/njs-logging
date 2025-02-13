@@ -54,11 +54,10 @@ jobs:
           scope: '@leocodeio-njs'
       
       - name: Configure npm to use the authentication token
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
-
-      - name: Configure npm to use the authentication token
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" 
       
+      - name: Configure npm to use the authentication token
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
