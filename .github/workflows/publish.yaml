@@ -20,6 +20,9 @@ jobs:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@leocodeio-njs'
+          
+      - name: Configure npm to use the authentication token
+      run: echo "@leocodeio-njs:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
       
       - name: Install dependencies
         run: npm install
@@ -36,44 +39,39 @@ jobs:
           name: dist
           path: dist/
       
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@leocodeio-njs'
-      
-      - name: Configure npm to use the authentication token
-        run: echo "@leocodeio-njs:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
-      
-      - name: Configure npm to use the authentication token
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Configure Git user
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-      
-      - name: Publish to GitHub Packages
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+publish:
+  needs: build
+  runs-on: ubuntu-latest
+  permissions:
+    contents: read
+    packages: write
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@leocodeio-njs'
+    
+    - name: Configure npm to use the authentication token
+      run: echo "@leocodeio-njs:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Configure Git user
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+    
+    - name: Publish to GitHub Packages
+      run: npm publish
