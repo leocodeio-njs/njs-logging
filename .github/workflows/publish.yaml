@@ -42,6 +42,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     env:
       NODE_AUTH_TOKEN: ${{ secrets.INTERNAL_GITHUB_SECRET }}  # Correctly set in `env`
     steps:
