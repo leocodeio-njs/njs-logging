@@ -21,9 +21,6 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@leocodeio-njs'
 
-      - name: Authenticate with GitHub Packages
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
-
       - name: Install dependencies
         run: npm install
 
@@ -57,9 +54,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@leocodeio-njs'
-
-      - name: Authenticate with GitHub Packages
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc  # Fixed to use GITHUB_TOKEN
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
