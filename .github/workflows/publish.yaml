@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Correctly set in `env`
+      NODE_AUTH_TOKEN: ${{ secrets.INTERNAL_GITHUB_SECRET }}  # Correctly set in `env`
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
       contents: read
       packages: write
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Correctly set in `env`
+      NODE_AUTH_TOKEN: ${{ secrets.INTERNAL_GITHUB_SECRET }}  # Correctly set in `env`
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
