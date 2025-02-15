@@ -55,7 +55,7 @@ jobs:
           scope: '@leocodeio-njs'
 
       - name: Authenticate with GitHub Packages
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.INTERNAL_GITHUB_SECRET }}" > ~/.npmrc
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
