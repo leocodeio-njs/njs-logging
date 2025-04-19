@@ -1,5 +1,10 @@
 // utils/logging/logging.module.ts
-import { DynamicModule, Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import {
+  DynamicModule,
+  Module,
+  MiddlewareConsumer,
+  NestModule,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerService } from './logger.service';
 import { WinstonModule } from 'nest-winston';
@@ -12,11 +17,12 @@ import { CorrelationMiddleware } from './correlation.middleware';
 import { DatabaseLoggerService } from './database-logger.service';
 import { LogEntry } from './entities/log-entry.entity';
 import { LoggingModuleOptions } from './interfaces/logging-options.interface';
+import Joi from 'joi';
 
 @Module({
   imports: [ConfigModule],
   providers: [CorrelationService],
-  exports: [CorrelationService]
+  exports: [CorrelationService],
 })
 export class LoggingModule implements NestModule {
   static forRoot(options: LoggingModuleOptions): DynamicModule {
@@ -55,13 +61,14 @@ export class LoggingModule implements NestModule {
             winston.format.timestamp(),
             winston.format.json(),
           ),
-        })
+        }),
       );
 
       // Combined logs
       winstonTransports.push(
         new winston.transports.DailyRotateFile({
-          filename: options.winston.file.combinedPath || 'logs/combined-%DATE%.log',
+          filename:
+            options.winston.file.combinedPath || 'logs/combined-%DATE%.log',
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
           maxSize: options.winston.file.maxSize || '20m',
@@ -70,7 +77,7 @@ export class LoggingModule implements NestModule {
             winston.format.timestamp(),
             winston.format.json(),
           ),
-        })
+        }),
       );
     }
 
@@ -82,7 +89,16 @@ export class LoggingModule implements NestModule {
         WinstonModule.forRoot({
           transports: winstonTransports,
         }),
-        ConfigModule,
+        ConfigModule.forRoot({
+          isGlobal: true,
+          // Load environment variables - update with the path to your .env file
+          envFilePath: ['.env.local', '.env'],
+          // Add social media configuration variables
+          validationSchema: Joi.object({
+            // DB AND MEMORY
+            DEBUG_MODE: Joi.boolean().default(true).required(),
+          }),
+        }),
       ],
       providers: [
         LoggerService,
