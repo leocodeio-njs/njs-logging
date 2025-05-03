@@ -8,6 +8,10 @@ import { CorrelationService } from './logging/correlation.service';
 import { CorrelationMiddleware } from './logging/correlation.middleware';
 import { LogEntry } from './logging/entities/log-entry.entity';
 
+// interceptors
+import { PerformanceInterceptor } from './interceptors/performance.interceptor';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
+
 export {
   LoggingModule,
   DebugUtil,
@@ -18,4 +22,7 @@ export {
   CorrelationService,
   CorrelationMiddleware,
   LogEntry,
+  // interceptors
+  PerformanceInterceptor,
+  ResponseInterceptor,
 };
