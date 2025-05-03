@@ -1,6 +1,6 @@
 {
   "name": "@leocodeio-njs/njs-logging",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "basic logging module for nestjs",
   "author": "leocodeio",
   "license": "MIT",

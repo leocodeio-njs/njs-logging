@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/leocodeio-njs/njs-logging/compare/v1.0.1...v1.0.2) (2025-05-03)
+
+
+### Performance Improvements
+
+* **updated dps:** updated dps ([bbb2314](https://github.com/leocodeio-njs/njs-logging/commit/bbb2314a0aa1aaedc4507ae5f18db8bf8a53e70c))
+
 ## [1.0.1](https://github.com/leocodeio-njs/njs-logging/compare/v1.0.0...v1.0.1) (2025-05-03)
 
 
