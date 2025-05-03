@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/leocodeio-njs/njs-logging/compare/v1.0.0...v1.0.1) (2025-05-03)
+
+
+### Performance Improvements
+
+* **moved reponsea and performance to loggin:** moved reponsea and performance to loggin ([6045f0b](https://github.com/leocodeio-njs/njs-logging/commit/6045f0bc6423cb36f84cc6e08bfd53500ae37aee))
+
 # 1.0.0 (2025-04-19)
 
 
