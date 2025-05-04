@@ -7,6 +7,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigModule, AppConfigService } from '@leocodeio-njs/njs-config';
 import { PerformanceInterceptor } from './interceptors/performance.interceptor';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { PrometheusService } from '@leocodeio-njs/njs-health';
+import { LoggingInterceptor } from './logging/logging.interceptor';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([LogEntry]),
@@ -33,6 +36,7 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
   controllers: [AppController],
   providers: [
     AppService,
+    PrometheusService,
     {
       provide: 'APP_INTERCEPTOR',
       useClass: PerformanceInterceptor,
@@ -40,6 +44,10 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
     {
       provide: 'APP_INTERCEPTOR',
       useClass: ResponseInterceptor,
+    },
+    {
+      provide: 'APP_INTERCEPTOR',
+      useClass: LoggingInterceptor,
     },
   ],
 })

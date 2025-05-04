@@ -3,7 +3,7 @@
 ## Usage
 
 ```bash
-npm install @leocodeio-njs/njs-logging
+npm install nest-winston winston-daily-rotate-file winston @leocodeio-njs/njs-logging
 ```
 
 ## License
