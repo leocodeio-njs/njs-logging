@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/leocodeio-njs/njs-logging/compare/v1.0.3...v1.0.4) (2025-05-04)
+
+
+### Performance Improvements
+
+* **buld cmd fix:** buld cmd fix ([3ae71d1](https://github.com/leocodeio-njs/njs-logging/commit/3ae71d1bd841fc2068793e9bc6966262f013546c))
+
 ## [1.0.3](https://github.com/leocodeio-njs/njs-logging/compare/v1.0.2...v1.0.3) (2025-05-04)
 
 
